@@ -53,7 +53,7 @@ release:
 	@./build/release.sh
 
 docker:
-	@docker build -t cadvisor -f deploy/Dockerfile .
+	@docker build -t $(container) -f deploy/Dockerfile .
 
 presubmit: vet
 	@echo ">> checking go formatting"
