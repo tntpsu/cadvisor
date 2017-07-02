@@ -12,13 +12,19 @@
 # See the License for the specific language governing permissions and
 
 GO := go
+goversion = 1.6.2
 pkgs  = $(shell $(GO) list ./... | grep -v vendor)
+build-image = cadvisor-build-image
+container = cadvisor
 
 all: presubmit build test
 
-test:
-	@echo ">> running tests"
-	@$(GO) test -short -race $(pkgs)
+build-image:
+	@docker build -t $(build-image) -f build/Dockerfile.build .
+
+test: build-image
+	@echo ">> running tests using docker"
+	@docker run --rm -i -v $(PWD):/go/src/github.com/google/cadvisor $(build-image) $(GO) test -tags test -short -race $(pkgs)
 
 test-integration:
 	@./build/integration.sh
@@ -34,9 +40,9 @@ vet:
 	@echo ">> vetting code"
 	@$(GO) vet $(pkgs)
 
-build: assets
-	@echo ">> building binaries"
-	@./build/build.sh
+build: build-image
+	@echo ">> building binaries using docker"
+	@docker run --rm -v $(PWD):/go/src/github.com/google/cadvisor $(build-image) /bin/sh -c "./build/assets.sh;./build/build.sh"
 
 assets:
 	@echo ">> building assets"
@@ -47,7 +53,7 @@ release:
 	@./build/release.sh
 
 docker:
-	@docker build -t cadvisor:$(shell git rev-parse --short HEAD) -f deploy/Dockerfile .
+	@docker build -t cadvisor -f deploy/Dockerfile .
 
 presubmit: vet
 	@echo ">> checking go formatting"
