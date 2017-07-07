@@ -12,6 +12,7 @@ RUN apk --no-cache add ca-certificates wget device-mapper && \
     apk add glibc-${GLIBC_VERSION}.apk glibc-bin-${GLIBC_VERSION}.apk && \
     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib && \
     echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
+    apk add --update findutils && \
     rm -rf /var/cache/apk/*
 
 # Grab cadvisor from the staging directory.
