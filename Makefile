@@ -16,11 +16,14 @@ goversion = 1.6.2
 pkgs  = $(shell $(GO) list ./... | grep -v vendor)
 build-image = cadvisor-build-image
 container = cadvisor
+BUILD_ARGS    ?= --build-arg http_proxy=$$http_proxy \
+		 --build-arg https_proxy=$$https_proxy \
+		 --build-arg no_proxy=$$no_proxy
 
 all: presubmit build test
 
 build-image:
-	@docker build -t $(build-image) -f build/Dockerfile.build .
+	@docker build $(BUILD_ARGS) -t $(build-image) -f build/Dockerfile.build .
 
 test: build-image
 	@echo ">> running tests using docker"
