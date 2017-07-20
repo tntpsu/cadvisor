@@ -56,7 +56,7 @@ release:
 	@./build/release.sh
 
 docker:
-	@docker build -t $(container) -f deploy/Dockerfile .
+	@docker build $(BUILD_ARGS) -t $(container) -f deploy/Dockerfile .
 
 presubmit: vet
 	@echo ">> checking go formatting"
