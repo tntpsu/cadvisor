@@ -1,4 +1,6 @@
 FROM golang:1.6.2
 
-RUN go get github.com/tools/godep
+RUN git config --global http.proxy ${http_proxy} \
+    && go get github.com/tools/godep
+
 WORKDIR /go/src/github.com/google/cadvisor
